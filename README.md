@@ -66,8 +66,6 @@ Commands:
   help     Print this message or the help of the given subcommand(s)
 ```
 
-#### Balance
-
 ```sh
 Usage: nbxdca account balance <ASSET>
 
