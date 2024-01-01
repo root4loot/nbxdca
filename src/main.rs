@@ -58,13 +58,15 @@ fn main() -> Result<(), Box<dyn Error>> {
         )
         .get_matches();
 
-    if let Some(config_path) = matches.get_one::<PathBuf>("config") {
-        // config, set custom file path
-        cfg_fp = config_path
-            .to_owned()
-            .into_os_string()
-            .into_string()
-            .unwrap();
+    // Default path "./config.toml" or custom path from --config argument
+    let cfg_fp = matches
+        .get_one::<PathBuf>("config")
+        .map_or_else(|| "./config.toml".to_string(), |p| p.display().to_string());
+
+    // Check if the config file exists
+    if !PathBuf::from(&cfg_fp).exists() {
+        eprintln!("Error: Configuration file '{}' not found.", cfg_fp);
+        return Err("Configuration file not found".into());
     }
 
     let file_contents = read_file_contents(cfg_fp.to_string())?;
