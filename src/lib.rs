@@ -122,11 +122,11 @@ impl Order {
                     "timeInForce": {
                         "type": "IMMEDIATE_OR_CANCEL"
                     },
-                },
                 "freeze": {
                     "type": "AMOUNT",
                     "value": amount.to_string()
                 }
+            }
             }),
             "SELL" => serde_json::json!({
                 "market": market,
@@ -144,17 +144,25 @@ impl Order {
         .to_string();
 
         let client = Client::new();
-        let r_success = client
+        let response = client
             .post(format!(
                 "https://api.nbx.com/accounts/{}/orders",
                 account.id
             ))
             .header("authorization", format!("Bearer {}", token))
-            .body(body)
-            .send()?
-            .status()
-            .is_success();
-        Ok(r_success)
+            .body(body.clone()) // Cloned for logging
+            .send()?;
+
+        let status = response.status();
+        let response_body = response.text()?; // Get the response body
+
+        if status.is_success() {
+            Ok(true)
+        } else {
+            // Log the response body on error
+            println!("Failed to create order. Response: {}", response_body);
+            Ok(false)
+        }
     }
 
     pub fn details_by_last_id(account: &Account, token: &String) -> Order {
