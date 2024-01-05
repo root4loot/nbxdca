@@ -86,16 +86,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             Some(("new", sub_m)) => {
                 let side = sub_m.get_one::<String>("SIDE").unwrap().to_string();
                 let ticker = sub_m.get_one::<String>("TICKER").unwrap().to_string();
-                let amount_str = sub_m.get_one::<String>("AMOUNT").unwrap();
-
-                // Parse the amount string as a float
-                let amount = match amount_str.parse::<f64>() {
-                    Ok(val) => val,
-                    Err(_) => {
-                        println!("Error: Invalid amount format. Please enter a valid number.");
-                        return Ok(());
-                    }
-                };
+                let amount = *sub_m.get_one::<f64>("AMOUNT").unwrap();
 
                 println!(
                     "Create new order: Side: {}, Ticker: {}, Amount: {}",
